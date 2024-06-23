@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Muhammad Ahmed">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body id = "body"> 
+    <div id = "page">
+        <h1>Task Manager</h1>
+        <div id = "task-form-container">
+            <form id = task-form-content>
+                <label for="tname">Task Name</label><br>
+                <!-- <span id="show-form-button">&times;</span> [ye wala scn bhi kya ja sakta hai (&times produces X)]-->
+                <input type="text" id="tname" name="tname" placeholder="Your Task Name here"><br>
+                
+                <label for="tdes"> Task Description </label><br>
+                <input type = "text" id="tdes" name="tdes" placeholder="Your Task Description here" width = 3><br>
+        
+                <label for="sdate">Starting Date</label><br>
+                <input type="date" id="sdate" name="sdate" placeholder="DD/MM/YY"><br>
+        
+                <label for = "ddate"> Due Date</label><br>
+                <input type = "date" id = "ddate" name="ddate" placeholder="MM/DD/YY"><br>
+
+                <button id = 'add-task-button' onclick = "addTask()">Add Task</button><br>
+                <button id = "hide-form-button" onclick="hideForm()">Back</button>
+            </form>
+        </div>
+        <ul id="ul"></ul>
+        <button id = 'show-form-button' onclick = "showForm()">Add Task</button><br>
+    </div>
+    
+    <script src="scripts.js"></script>
+</body>
+
+</html>
