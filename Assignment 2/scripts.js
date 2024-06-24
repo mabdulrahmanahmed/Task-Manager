@@ -111,6 +111,7 @@ function addTask()  //since all if conditions for input boxes are in addTask fun
 
     resetForm();
     form.style.display = "none";
+    
 }
 
 function resetForm() {
