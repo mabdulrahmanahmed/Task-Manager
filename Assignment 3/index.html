@@ -1,0 +1,108 @@
+<!-- form men priority aur category ki css abhi change karni hai  -->
+ <!-- confirm prompt ki css change karni hai -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Muhammad Ahmed">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body> 
+    <div id = "page">
+        <h1>Task Manager</h1>
+        <div id = "task-form-container">
+            <form id = task-form-content>
+                <label for="tname">Task Name</label><br>
+                <!-- <span id="show-form-button">&times;</span> [ye wala scn bhi kya ja sakta hai (&times produces X)]-->
+                <input type="text" id="tname" name="tname" placeholder="Your Task Name here"><br>
+                
+                <label for="tdes"> Task Description </label><br>
+                <input type = "text" id="tdes" name="tdes" placeholder="Your Task Description here" width = 3><br>
+        
+                <label for="sdate">Starting Date</label><br>
+                <input type="date" id="sdate" name="sdate" placeholder="DD/MM/YY"><br>
+        
+                <label for = "ddate"> Due Date</label><br>
+                <input type = "date" id = "ddate" name="ddate" placeholder="MM/DD/YY"><br>
+
+                <label for = "priority">Priority</label><br>
+                <select id = "priority">
+                    <option value="" disabled selected hidden>
+                        Select a Priority level
+                    </option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select><br>
+                    
+                <label for = "category">Category</label><br>
+                <select id = "category">
+                    <option value = "" disabled selected hidden>
+                        Select a Category
+                    </option>
+                    <option value = "Work">Work</option>
+                    <option value = "Personal">Personal</option>
+                    <option value = "Other">Other</option>
+                </select>
+                    
+                <button id = 'add-task-button' onclick = "addTask()">Add Task</button>
+                <button id='save-changes-button' onclick="saveChanges()" type="button" style="display:none;">Save Changes</button>
+                <button id = "hide-form-button" onclick="hideForm()">Back</button>
+            </form>
+        </div>
+
+        <div id = "filter-container">
+            <div id = "filter-options">
+                <label>Select Categorie(s)</label><br>
+                <label><input value = "Work" type = "checkbox" id = "filter-category-work">Work</label>
+                <label><input value = "Personal" type = "checkbox" id = "filter-category-personal">Personal</label>
+                <label><input value = "Other" type = "checkbox" id = "filter-category-other">Other</label><br>
+
+                <label for = "filter-status">Select a Status</label><br>
+                <select id = "filter-status">
+                    <option value = "" disabled selected hidden>
+                        Select a Status
+                    </option>
+                    <!-- <option value = "filter-status-all">All</option>
+                    <option value = "filter-status-completed">Completed</option>
+                    <option value = "filter-status-pending">Pending</option> -->
+                    <option value = "All">All</option>
+                    <option value = "Completed">Completed</option>
+                    <option value = "Pending">Pending</option>
+                </select><br>
+
+                <button id="filter-tasks-button" onclick="filterTasks()">Filter Tasks</button>
+                <button id = "hide-filter-buuton" onclick="hideFilter()">Back</button>
+            </div>
+        </div>
+
+        <div id = "confirm-delete-container">
+            <div id = "confirm-delete">
+                <p>Do you Wish to Delete this Task </p>
+                <button id = "confirm-delete-yes"">Yes</button> <!--on click isme nahi hai js se direct add kya hwa hai-->
+                <button id = "confirm-delete-no" onclick="hideConfirmDelete()">No</button>
+            </div>
+        </div>
+
+        <ul id="ul"></ul>
+        <button id = 'show-form-button' onclick = "showForm()">Add Task</button><br>
+        <button id = "show-filter-button" onclick = "showFilter()">Filter</button><br>
+        <select id = "sort">
+            <option value="" disabled selected hidden>
+                Sort By
+            </option>
+            <option value="Priority">Priority</option>
+            <option value="Due-Date">Due-Date</option>
+        </select><br>
+        <button id="sort-button" onclick="sortTasks()">Sort Tasks</button><br>
+    </div>
+    
+    <script src="scripts.js"></script>
+</body>
+
+</html>
