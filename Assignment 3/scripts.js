@@ -1,3 +1,5 @@
+document.addEventListener("DOMContentLoaded", loadTasksFromStorage);
+
 function showForm()
 {
     var form = document.getElementById("task-form-container");
@@ -5,7 +7,7 @@ function showForm()
 }
 
 function hideForm(){
-    event.preventDefault();     // the button 'Back' refreshes the page hence list/data lost
+    event.preventDefault();
     var form = document.getElementById("task-form-container");
     form.style.display = "none";
 }
@@ -16,7 +18,7 @@ function showFilter(){
 }
 
 function hideFilter(){
-    event.preventDefault();     // the button 'Back' refreshes the page hence list/ data lost
+    event.preventDefault();
     var form = document.getElementById("filter-container");
     form.style.display = "none";
 }
@@ -27,14 +29,14 @@ function showConfirmDelete(){
 }
 
 function hideConfirmDelete(){
-    event.preventDefault();     // the button 'Back' refreshes the page hence list/ data lost
+    event.preventDefault();
     var confirmDelete = document.getElementById("confirm-delete-container");
     confirmDelete.style.display = "none";
 }
 
-function addTask() //since all if conditions for input boxes are in addTask function which only triggers when the button is pressed so for example if I leave certain categories they will turn red. now technically speaking they should turn black once input is recognises but that only happens when the button is pressed hence it will remain red until the button is pressed regardless of whether it has input or not. the solution to this is to make a variable which becomes true the first time the button is pressed after wihch the if conditions should constantly run so that all updates are being done live and once a category is filled the border color will change back to normal even before pressing the button.
+function addTask()
 {
-    event.preventDefault(); // the button 'Add Task' causes refresh hence dynamic list/ data lost ... this function prevents reloading hence data is preserved (unless page is refreshed)
+    event.preventDefault();
     var form = document.getElementById("task-form-container");      
     var tname = document.getElementById("tname");
     var tdes = document.getElementById("tdes"); 
@@ -115,7 +117,7 @@ function addTask() //since all if conditions for input boxes are in addTask func
     var taskContent = document.createElement("span");
     taskContent.textContent=`${tname.value} - ${tdes.value} - ${sdate.value} - ${ddate.value} - ${priority.value} - ${category.value}`;
 
-    var taskActions = document.createElement("div");     // another method ... this method allowed for buttons 'delete' and 'edit' to be on a different line as a <div> class was being created which autmocatically creates a new line
+    var taskActions = document.createElement("div");
     taskActions.className = "task-actions";
 
     var deleteButton = document.createElement("button");
@@ -124,11 +126,11 @@ function addTask() //since all if conditions for input boxes are in addTask func
     deleteButton.textContent = "Delete";
     deleteButton.onclick = function() {
         showConfirmDelete();
+        confirmDelete.onclick = function() {
+            deleteTask(li);
+        }
     };
-    confirmDelete.onclick = function() {
-        deleteTask(li);
-        // li.remove();
-    }
+    // delete task was initially outside the deleteButton event listner (onclick) fucntion however this was causing an issue of reference. confirmDelete.onclick and deleteButton.onclick store references to the newest added task however when delete button is clicked deleteButton.onclick reference changes to the <li> delet button that was clicked hence targeting the specific task that is meant to be deleted however confirmDelete.onclick still references the last task added hence pressing the delete button would always delete the last task added (meaning only 1 task would always be deleted). However by adding it to the the deleteButton.onclick now both deleteButton.onclick and confirmDelete.onclick reference the same <li> (the correct <li> not the most recently added one) hence the correct task is deleted 
 
     var editButton = document.createElement("button");
     editButton.id = "edit";
@@ -144,15 +146,13 @@ function addTask() //since all if conditions for input boxes are in addTask func
     taskActions.appendChild(deleteButton);
     li.appendChild(checkbox);
     li.appendChild(taskContent);
-    // li.appendChild(editButton);
-    // li.appendChild(deleteButton);
     li.appendChild(taskActions);
     ul.appendChild(li);
 
     checkbox.addEventListener("change", function () {
         if (checkbox.checked) {
           taskContent.style.textDecoration = "line-through";
-          li.dataset.status = "Completed";
+          li.setAttribute('data-status', "Completed");
         } 
         else {
           taskContent.style.textDecoration = "none";
@@ -160,8 +160,8 @@ function addTask() //since all if conditions for input boxes are in addTask func
     });
 
     resetForm();
-    form.style.display = "none";
-    
+    hideForm();
+    saveTasksToStorage();
 }
 
 function resetForm() {
@@ -185,7 +185,8 @@ function resetForm() {
 
 function deleteTask(li){
     li.remove();
-    hideConfirmDelete(); // ye kyun karna parra hai abhi tak to nahi karna parra tha 
+    hideConfirmDelete();
+    saveTasksToStorage();
 }
 
 function editTask(li, taskContent) {
@@ -284,9 +285,11 @@ function saveChanges(li, taskContent) {
         return;
     }
 
+    li.setAttribute('data-category', category.value);
     taskContent.textContent = `${tname.value} - ${tdes.value} - ${sdate.value} - ${ddate.value} - ${priority.value} - ${category.value}`;
     resetForm();
-    document.getElementById("task-form-container").style.display = "none";
+    hideForm();
+    saveTasksToStorage();
 }
 
 function getSelectedCategories() {
@@ -362,4 +365,85 @@ function getPriorityValue(priority) {
             return 4;
     }
 }
+
+function saveTasksToStorage() {
+    const tasks = [];
+    const taskItems = document.querySelectorAll("#ul li");
+
+    taskItems.forEach(function (taskItem) {
+        const checkbox = taskItem.querySelector("input[type='checkbox']");
+        const taskContent = taskItem.querySelector("span").textContent;
+        const status = checkbox.checked ? "Completed" : "Pending";
+        tasks.push({
+            content: taskContent,
+            status: status,
+            category: taskItem.getAttribute('data-category')
+        });
+    });
+
+    sessionStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function loadTasksFromStorage() {
+    const tasks = JSON.parse(sessionStorage.getItem('tasks')) || [];
+    const ul = document.querySelector("#ul");
+
+    tasks.forEach(function (task) {
+        const li = document.createElement("li");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = "checkbox";
+        checkbox.checked = task.status === "Completed";
+
+        const taskContent = document.createElement("span");
+        taskContent.textContent = task.content;
+        if (task.status === "Completed") {
+            taskContent.style.textDecoration = "line-through";
+        }
+
+        const taskActions = document.createElement("div");
+        taskActions.className = "task-actions";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.id = "delete";
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = function () {
+            showConfirmDelete();
+        };
+
+        const confirmDelete = document.getElementById("confirm-delete-yes");
+        confirmDelete.onclick = function () {
+            deleteTask(li);
+        };
+
+        const editButton = document.createElement("button");
+        editButton.id = "edit";
+        editButton.textContent = "Edit";
+        editButton.onclick = function () {
+            editTask(li, taskContent);
+        };
+
+        li.setAttribute('data-category', task.category);
+        li.setAttribute('data-status', task.status);
+
+        taskActions.appendChild(editButton);
+        taskActions.appendChild(deleteButton);
+        li.appendChild(checkbox);
+        li.appendChild(taskContent);
+        li.appendChild(taskActions);
+        ul.appendChild(li);
+
+        checkbox.addEventListener("change", function () {
+            if (checkbox.checked) {
+                taskContent.style.textDecoration = "line-through";
+                li.setAttribute('data-status', "Completed");
+            } else {
+                taskContent.style.textDecoration = "none";
+                li.setAttribute('data-status', "Pending");
+            }
+            saveTasksToStorage();
+        });
+    });
+}
+
 
